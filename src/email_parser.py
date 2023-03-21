@@ -4,7 +4,7 @@ import email.header
 import codecs
 import re
 from bs4 import BeautifulSoup
-
+from nltk.corpus import brown as br
 path = 'data/conf_emails_numbered/'
 listing = os.listdir(path)
 
@@ -20,10 +20,10 @@ with open('country_names.txt') as f:
     any_country = '|'.join(['(?:%s)' % re.escape(s) for s in country_names])
     any_abbr_country = '|'.join(['(?:%s)' % re.escape(s) for s in country_abbrs])
     #print(any_country)
-    country_pattern = re.compile(f'(?:.*)(?:\\s+|^)([a-zA-z]+),\\s*({any_country})(?:.*)', re.IGNORECASE)
+    country_pattern = re.compile(f'(?:.*)(?:\\s+|^)([A-Z][a-zA-Z]+),\\s*({any_country})(?:.*)', re.IGNORECASE)
 
     # Do not ignore case here
-    country_abbr_pattern = re.compile(f'(?:.*)(?:\\s+|^)([a-zA-z]+),\\s*({any_abbr_country})(?:.*)')
+    country_abbr_pattern = re.compile(f'(?:.*)(?:\\s+|^)([A-Z][a-zA-Z]+),\\s*({any_abbr_country})(?:.*)')
 
 #with open('country_names.txt') as f:
 #    country_names = [s.strip() for s in f.readlines()]
@@ -31,6 +31,8 @@ with open('country_names.txt') as f:
 #    country_pattern = re.compile(f'(?:.*)({any_country})(?:.*)', re.IGNORECASE)
 #    print(country_pattern.match('Japan'))
 
+city_state_pattern = re.compile(f'(\s*[A-Z][a-zA-Z]+)+,\s?([A-Z][a-z]+|[A-Z][A-Z]+)')
+conf_pattern = re.compile(f'(\s*[A-Z][a-zA-Z]+)+\s*[Cc]onference(.*[0-9]{4})?')
 def get_header(msg, name):
     text, encoding = email.header.decode_header(msg.get(name))[0]
     if isinstance(text, bytes):
@@ -47,7 +49,7 @@ for filename in listing:
         'date': get_header(msg, 'date'),
     }
 
-    print('%s: %s' % (filename, details['subject']))
+    print('%s: %s\n' % (filename, details['subject']))
 
     for part in msg.walk():
         if part.get_content_type() == 'text/html':
@@ -66,6 +68,12 @@ for filename in listing:
 
             for x in extracted:
                 match = country_pattern.match(x)
+                result = city_state_pattern.search(x)
+                conference = conf_pattern.search(x)
+                if conference: #and conference.group().lower() not in br.words(): 
+                    print("Conference: ", conference.group())
+                if result:
+                    print('Location: ',result.group())
                 if match:
                     print('  ' + str(match.groups()))
                 match = country_abbr_pattern.match(x)
