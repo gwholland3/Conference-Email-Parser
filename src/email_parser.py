@@ -31,8 +31,6 @@ with open('country_names.txt') as f:
 #    country_pattern = re.compile(f'(?:.*)({any_country})(?:.*)', re.IGNORECASE)
 #    print(country_pattern.match('Japan'))
 
-city_state_pattern = re.compile(f'(\s*[A-Z][a-zA-Z]+)+,\s?([A-Z][a-z]+|[A-Z][A-Z]+)')
-conf_pattern = re.compile(f'(\s*[A-Z][a-zA-Z]+)+\s*[Cc]onference(.*[0-9]{4})?')
 def get_header(msg, name):
     text, encoding = email.header.decode_header(msg.get(name))[0]
     if isinstance(text, bytes):
@@ -68,12 +66,6 @@ for filename in listing:
 
             for x in extracted:
                 match = country_pattern.match(x)
-                result = city_state_pattern.search(x)
-                conference = conf_pattern.search(x)
-                if conference: #and conference.group().lower() not in br.words(): 
-                    print("Conference: ", conference.group())
-                if result:
-                    print('Location: ',result.group())
                 if match:
                     print('  ' + str(match.groups()))
                 match = country_abbr_pattern.match(x)
