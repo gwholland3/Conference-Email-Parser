@@ -4,9 +4,9 @@ import re
 def find_dates(parsed_file):
     '''
     :param This function takes as input a parsed eml file.
-    :return: dict mapping 'submission' and 'conference' to relevant lines. None if none are found
+    :return: dict of values to dates
     '''
-    date_dict = {'conference': None, 'submission': []}
+    date_dict = {'conf_start_date': None, 'submission_deadline': [], 'notif_deadline': None}
     for p in parsed_file:
         for s in p:
             for w in s:
@@ -14,14 +14,24 @@ def find_dates(parsed_file):
                 match = re.search(r"\b(20[0-3]\d|2040)\b", w)
                 if match:
                     #check to see what type of date it is
+                    pattern = r"\d|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+                    filtered_strings = [i for i in s if re.search(pattern,i,flags=re.IGNORECASE)]
                     if is_conference_date(s,w):
-                        current_sentence = ' '.join(s)
-                        if date_dict['conference'] == None:
-                            date_dict['conference'] = current_sentence
-                        elif len(current_sentence) < len(date_dict['conference']):
-                            date_dict['conference'] = current_sentence
+                        #print(s)
+                        current_sentence = ' '.join(filtered_strings)
+                        if date_dict['conf_start_date'] == None:
+                            date_dict['conf_start_date'] = current_sentence
+                        elif len(current_sentence) < len(date_dict['conf_start_date']):
+                            date_dict['conf_start_date'] = current_sentence
                     if is_submission_date(s,w):
-                        date_dict['submission'].append(' '.join(s))
+                        date_dict['submission_deadline'].append(' '.join(filtered_strings))
+                    if is_notification_date(s,w):
+                        date_dict['notif_deadline'] = ' '.join(filtered_strings)
+
+    if len(date_dict['submission_deadline']) > 0:
+        date_dict['submission_deadline'] = date_dict['submission_deadline'][0]
+    else:
+        date_dict['submission_deadline'] = None
     return date_dict
 
 
@@ -54,6 +64,38 @@ def is_submission_date(parsed_sentence,date_word):
             if month in w.lower():
                 contains_month = True
     if contains_submission and (contains_month or is_proper_date):
+        return True
+    return False
+
+def is_notification_date(parsed_sentence,date_word):
+    '''
+    :param parsed_sentence: a parsed sentence that contains a date
+    :param date_word: word that was found to contain a date
+    :return: true or false on whether or not sentence is considered a submission deadline
+    '''
+    #features to be found
+    is_proper_date = False
+    contains_month = False
+    contains_notification = False
+    #check if the date is a proper date
+    match = re.search(r'\d{4}-\d{2}-\d{2}', date_word)
+    if match:
+        is_proper_date = True
+    match = re.search(r'\d{2}-\d{2}-\d{4}', date_word)
+    if match:
+        is_proper_date = True
+    match = re.search(r'\d{1,2}/\d{1,2}/\d{4}', date_word)
+    if match:
+        is_proper_date = True
+    months = ['jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    #check if there are other factors that suggest this is a submission date
+    for w in parsed_sentence:
+        if 'notification' in w.lower():
+            contains_notification = True
+        for month in months:
+            if month in w.lower():
+                contains_month = True
+    if contains_notification and (contains_month or is_proper_date):
         return True
     return False
 
@@ -91,7 +133,7 @@ def is_conference_date(parsed_sentence,date_word):
 
 #This stuff just used for testing
 # if __name__ == '__main__':
-#     f = open('../out/id361.html.txt','r')
+#     f = open('../out/id349.html.txt','r')
 #     text = f.read()
 #     sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 #     parsed = [[nltk.word_tokenize(s) for s in sent_tokenizer.tokenize(par.strip())] for par in text.split('\n')]
