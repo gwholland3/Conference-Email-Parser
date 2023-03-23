@@ -1,6 +1,6 @@
 import email
-import email.header
 import os
+import re
 
 from bs4 import BeautifulSoup
 
@@ -8,7 +8,13 @@ from bs4 import BeautifulSoup
 # Email object acts as a uniform container of relevant email data for our extractors to take in
 class Email:
 
-    def __init__(self, subject, body_text):
+    def __init__(self, sender_name, sender_addr, subject, body_text):
+        # Displayed name of the sender
+        self.sender_name = sender_name
+
+        # Email address of the sender
+        self.sender_addr = sender_addr
+
         # The subject line of the email
         self.subject = subject
 
@@ -27,7 +33,10 @@ def process_email(email_file):
     with open(email_file) as f:
         msg = email.message_from_file(f)
 
-    subject = msg.get('subject')
+    subject = get_header_field(msg, 'Subject')
+    sender = get_header_field(msg, 'From')
+
+    sender_name, sender_addr = parse_sender(sender)
 
     for part in msg.walk():
         if part.get_content_type() == 'text/html':
@@ -40,9 +49,21 @@ def process_email(email_file):
             strings = [s.strip() for s in soup.strings if not s.isspace()]
             body_text = '\n'.join(strings)
 
-            return Email(subject, body_text)
+            return Email(sender_name, sender_addr, subject, body_text)
 
     return None
+
+
+def get_header_field(msg, name):
+    return re.sub(r'\s+', ' ', decode_header(msg.get_all(name)[0]).strip())
+
+
+def decode_header(header_val):
+    return str(email.header.make_header(email.header.decode_header(header_val)))
+
+
+def parse_sender(sender):
+    return re.match(r'^"?(.*?)"? ?<([\w\.-]+@[\w\.-]+)>$', sender).groups()
 
 
 def parse_emails(emails_dir, out_dir, limit=None):
@@ -92,4 +113,4 @@ def get_header(msg, name):
     text, encoding = email.header.decode_header(msg.get(name))[0]
     if isinstance(text, bytes):
         text = text.decode(encoding=encoding) if encoding else str(text)
-    return text.replace('\n', ' ').replace('  ', ' ')
+    return re.sub(r'\s+', ' ', text.strip())

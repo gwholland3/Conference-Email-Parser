@@ -2,7 +2,7 @@ import os
 
 import nltk
 
-from email_parser import process_email
+from email_processor import process_email
 from location_extractor import find_location
 from conference_extractor import find_conference
 from date_extractor import find_dates
@@ -12,7 +12,7 @@ from dashboard import add_to_dashboard
 # Where the emails to be parsed are located
 emails_dir = 'data/conf_emails_numbered'
 # Maximum number of emails to parse from above location (set to `None` for no limit)
-limit = 20
+limit = 100
 
 sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
