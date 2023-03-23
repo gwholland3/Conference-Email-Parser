@@ -1,6 +1,11 @@
 import nltk
 import re
 import spacy
+from dateutil import parser
+
+def standardize_date(date_string):
+    parsed_date = parser.parse(date_string,fuzzy=True)
+    return parsed_date.date().isoformat()
 
 def find_dates(parsed_file):
     '''
@@ -25,9 +30,13 @@ def find_dates(parsed_file):
                     elif len(current_sentence) < len(date_dict['conf_start_date']):
                         date_dict['conf_start_date'] = current_sentence
                 if is_submission_date(s,w):
-                    date_dict['submission_deadline'].append(' '.join(filtered_strings))
+                    date_string = ' '.join(filtered_strings)
+                    standardized = standardize_date(date_string)
+                    date_dict['submission_deadline'].append(standardized)
                 if is_notification_date(s,w):
-                    date_dict['notif_deadline'] = ' '.join(filtered_strings)
+                    date_string = ' '.join(filtered_strings)
+                    standardized = standardize_date(date_string)
+                    date_dict['notif_deadline'] = standardized
 
     if len(date_dict['submission_deadline']) > 0:
         date_dict['submission_deadline'] = date_dict['submission_deadline'][0]
@@ -133,19 +142,19 @@ def is_conference_date(parsed_sentence,date_word):
     return False
 
 #This stuff just used for testing
-if __name__ == '__main__':
-    f = open('../out/id349.html.txt','r')
-    text = f.read()
-    sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-    parsed = [[nltk.word_tokenize(s) for s in sent_tokenizer.tokenize(par.strip())] for par in text.split('\n')]
-    print(parsed)
-    print(find_dates(parsed))
-    nlp = spacy.load("en_core_web_sm")
-    doc = nlp(text)
-    for entity in doc.ents:
-        if entity.label_ == "DATE":
-            print(entity.text)
-            for token in entity.subtree:
-                if token.head == entity.root:
-                    print(token.text, token.head)
-    f.close()
+# if __name__ == '__main__':
+#     f = open('../out/id349.html.txt','r')
+#     text = f.read()
+#     sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+#     parsed = [[nltk.word_tokenize(s) for s in sent_tokenizer.tokenize(par.strip())] for par in text.split('\n')]
+#     print(parsed)
+#     print(find_dates(parsed))
+#     nlp = spacy.load("en_core_web_sm")
+#     doc = nlp(text)
+#     for entity in doc.ents:
+#         if entity.label_ == "DATE":
+#             print(entity.text)
+#             for token in entity.subtree:
+#                 if token.head == entity.root:
+#                     print(token.text, token.head)
+#     f.close()
