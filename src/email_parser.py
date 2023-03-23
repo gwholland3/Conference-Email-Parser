@@ -7,6 +7,13 @@ from bs4 import BeautifulSoup
 #from nltk.corpus import brown as br
 
 
+class Email:
+
+    def __init__(self, subject, body_text):
+        self.subject = subject
+        self.body_text = body_text
+
+
 # Country names list taken from:
 # https://gist.githubusercontent.com/kalinchernev/486393efcca01623b18d/raw/daa24c9fea66afb7d68f8d69f0c4b8eeb9406e83/countries
 with open('country_names.txt') as f:
@@ -27,6 +34,28 @@ with open('country_names.txt') as f:
 #    any_country = '|'.join(['(?:%s)' % re.escape(s) for s in ['Japan']])
 #    country_pattern = re.compile(f'(?:.*)({any_country})(?:.*)', re.IGNORECASE)
 #    print(country_pattern.match('Japan'))
+
+
+def process_email(email_file):
+    with open(email_file) as f:
+        msg = email.message_from_file(f)
+
+    subject = get_header(msg, 'subject')
+
+    for part in msg.walk():
+        if part.get_content_type() == 'text/html':
+            html = part.get_payload(decode=True).decode(part.get_content_charset())
+            soup = BeautifulSoup(html, 'html.parser')
+
+            # I've found that this is a pretty good way to tokenize HTML emails.
+            # It's easier to begin with a split-up representation and re-join if
+            # needed.
+            strings = [s.strip() for s in soup.strings if not s.isspace()]
+            body_text = '\n'.join(strings)
+
+            return Email(subject, body_text)
+
+    return None
 
 
 def parse_emails(emails_dir, out_dir, limit=None):

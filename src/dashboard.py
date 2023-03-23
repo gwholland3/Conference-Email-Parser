@@ -21,11 +21,11 @@ supported_fields = {
 }
 
 
-def add_to_dashboard(parsed_emails, append=False):
+def add_to_dashboard(email_summaries, append=False):
     """
-    Add parsed email data to the dashboard.
+    Add email summaries to the dashboard.
 
-    parsed_emails is a list of dicts containing email information.
+    email_summaries is a list of dicts containing email information.
 
     append=False overwrites the existing contents in index.html,
     append=True appends the new parsed emails following the existing ones.
@@ -41,7 +41,7 @@ def add_to_dashboard(parsed_emails, append=False):
             header_row.append(th)
             th.append(supported_fields[field])
         
-    for parsed_email in parsed_emails:
+    for parsed_email in email_summaries:
         email_row = soup.new_tag('tr')
         table.tbody.append(email_row)
         for field in supported_fields:
@@ -75,5 +75,5 @@ def get_table(append):
 
 # Test script
 if __name__ == '__main__':
-    parsed_emails = [{'source_name': 'email1', 'conf_name': 'conf1'}, {'source_name': 'email2'}]
-    add_to_dashboard(parsed_emails, append=True)
+    email_summaries = [{'source_name': 'email1', 'conf_name': 'conf1'}, {'source_name': 'email2'}]
+    add_to_dashboard(email_summaries, append=True)
