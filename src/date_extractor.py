@@ -1,6 +1,6 @@
 import nltk
 import re
-import spacy
+#import spacy
 from dateutil import parser
 
 def standardize_date(date_string):

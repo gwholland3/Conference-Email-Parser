@@ -1,24 +1,33 @@
 import email
-import os
 import email.header
-import codecs
-import re
+import os
+
 from bs4 import BeautifulSoup
-#from nltk.corpus import brown as br
 
 
+# Email object acts as a uniform container of relevant email data for our extractors to take in
 class Email:
 
     def __init__(self, subject, body_text):
+        # The subject line of the email
         self.subject = subject
+
+        # All of the text in the message body, concatenated
         self.body_text = body_text
 
 
 def process_email(email_file):
+    """
+    Reads the raw contents of the .eml file, and pulls out all the data
+    we want into an Email object that gets returned.
+
+    Returns `None` if there is nothing to extract from the email.
+    """
+
     with open(email_file) as f:
         msg = email.message_from_file(f)
 
-    subject = get_header(msg, 'subject')
+    subject = msg.get('subject')
 
     for part in msg.walk():
         if part.get_content_type() == 'text/html':
@@ -68,16 +77,6 @@ def parse_emails(emails_dir, out_dir, limit=None):
                 # It's easier to begin with a split-up representation and re-join if
                 # needed.
                 extracted = [s.strip() for s in soup.strings if not s.isspace()]
-
-                """
-                for x in extracted:
-                    match = country_pattern.match(x)
-                    if match:
-                        print('  ' + str(match.groups()))
-                    match = country_abbr_pattern.match(x)
-                    if match:
-                        print('  ' + str(match.groups()))
-                """
 
                 with open(f'{out_dir}/%s.txt' % filename.replace('eml', 'html'), 'wb') as f:
                     f.write('\n'.join(extracted).encode('utf-8'))
