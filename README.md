@@ -7,7 +7,7 @@ Follow these instructions to set up the codebase locally.
 ### 1. Clone the Repo
 Run your favorite version of the git clone command on this repo. I prefer:
 
-`git clone git@github.com:gwholland3/Conference-Email-Parser.git`.
+`git clone git@github.com:gwholland3/Conference-Email-Parser.git`
 
 ### 2. Install Python
 This code was developed and run on Python `3.10`. Make sure you have an appropriate version installed locally.
@@ -15,7 +15,7 @@ This code was developed and run on Python `3.10`. Make sure you have an appropri
 ### 4. Install Requirements
 I recommend doing this in a fresh Python virtual environment. Cd into the repo and run:
 
-`pip3 install -r requirements.txt`.
+`pip3 install -r requirements.txt`
 
 ## Run the Program:
 From the project root, run:
