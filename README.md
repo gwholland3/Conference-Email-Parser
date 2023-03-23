@@ -1,6 +1,8 @@
 # Conference-Email-Parser
 For CSC 482.
 
+View the [dashboard](https://gwholland3.github.io/Conference-Email-Parser/).
+
 ## Setup
 Follow these instructions to set up the codebase locally.
 
