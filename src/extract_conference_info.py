@@ -14,13 +14,13 @@ out_dir = 'processed_emails'
 sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
 def main():
-    parse_emails(emails_dir, out_dir, limit=10)
+    parse_emails(emails_dir, out_dir, limit=30)
 
     emails = []
 
     listing = [filename for filename in os.listdir(out_dir) if filename.endswith('.txt')]
     for filename in listing:
-        email_info = {}
+        email_info = {'source_name': filename}
         with open(f'{out_dir}/{filename}') as f:
             content = f.read()
         sent_tokenized_content = [[s for s in sent_tokenizer.tokenize(par.strip())] for par in content.split('\n')]

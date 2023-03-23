@@ -85,5 +85,5 @@ def parse_emails(emails_dir, out_dir, limit=None):
 def get_header(msg, name):
     text, encoding = email.header.decode_header(msg.get(name))[0]
     if isinstance(text, bytes):
-        text = text.decode(encoding=encoding)
+        text = text.decode(encoding=encoding) if encoding else str(text)
     return text.replace('\n', ' ').replace('  ', ' ')
