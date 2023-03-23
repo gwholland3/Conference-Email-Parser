@@ -1,5 +1,6 @@
 import nltk
 import re
+import spacy
 
 def find_dates(parsed_file):
     '''
@@ -7,26 +8,26 @@ def find_dates(parsed_file):
     :return: dict of values to dates
     '''
     date_dict = {'conf_start_date': None, 'submission_deadline': [], 'notif_deadline': None}
-    for p in parsed_file:
-        for s in p:
-            for w in s:
-                #find if word has a number from 2000 to 2040 because that is likely a date
-                match = re.search(r"\b(20[0-3]\d|2040)\b", w)
-                if match:
-                    #check to see what type of date it is
-                    pattern = r"\d|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
-                    filtered_strings = [i for i in s if re.search(pattern,i,flags=re.IGNORECASE)]
-                    if is_conference_date(s,w):
-                        #print(s)
-                        current_sentence = ' '.join(filtered_strings)
-                        if date_dict['conf_start_date'] == None:
-                            date_dict['conf_start_date'] = current_sentence
-                        elif len(current_sentence) < len(date_dict['conf_start_date']):
-                            date_dict['conf_start_date'] = current_sentence
-                    if is_submission_date(s,w):
-                        date_dict['submission_deadline'].append(' '.join(filtered_strings))
-                    if is_notification_date(s,w):
-                        date_dict['notif_deadline'] = ' '.join(filtered_strings)
+    #for p in parsed_file:
+    for s in parsed_file:
+        for w in s:
+            #find if word has a number from 2000 to 2040 because that is likely a date
+            match = re.search(r"\b(20[0-3]\d|2040)\b", w)
+            if match:
+                #check to see what type of date it is
+                pattern = r"\d|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+                filtered_strings = [i for i in s if re.search(pattern,i,flags=re.IGNORECASE)]
+                if is_conference_date(s,w):
+                    #print(s)
+                    current_sentence = ' '.join(filtered_strings)
+                    if date_dict['conf_start_date'] == None:
+                        date_dict['conf_start_date'] = current_sentence
+                    elif len(current_sentence) < len(date_dict['conf_start_date']):
+                        date_dict['conf_start_date'] = current_sentence
+                if is_submission_date(s,w):
+                    date_dict['submission_deadline'].append(' '.join(filtered_strings))
+                if is_notification_date(s,w):
+                    date_dict['notif_deadline'] = ' '.join(filtered_strings)
 
     if len(date_dict['submission_deadline']) > 0:
         date_dict['submission_deadline'] = date_dict['submission_deadline'][0]
@@ -132,11 +133,19 @@ def is_conference_date(parsed_sentence,date_word):
     return False
 
 #This stuff just used for testing
-# if __name__ == '__main__':
-#     f = open('../out/id349.html.txt','r')
-#     text = f.read()
-#     sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-#     parsed = [[nltk.word_tokenize(s) for s in sent_tokenizer.tokenize(par.strip())] for par in text.split('\n')]
-#     print(parsed)
-#     print(find_dates(parsed))
-#     f.close()
+if __name__ == '__main__':
+    f = open('../out/id349.html.txt','r')
+    text = f.read()
+    sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+    parsed = [[nltk.word_tokenize(s) for s in sent_tokenizer.tokenize(par.strip())] for par in text.split('\n')]
+    print(parsed)
+    print(find_dates(parsed))
+    nlp = spacy.load("en_core_web_sm")
+    doc = nlp(text)
+    for entity in doc.ents:
+        if entity.label_ == "DATE":
+            print(entity.text)
+            for token in entity.subtree:
+                if token.head == entity.root:
+                    print(token.text, token.head)
+    f.close()
