@@ -23,6 +23,5 @@ I recommend doing this in a fresh Python virtual environment. Cd into the repo a
 From the project root, run:
 
 ```
-mkdir out
-python3 src/email_parser.py
+python3 src/extract_conference_info.py
 ```

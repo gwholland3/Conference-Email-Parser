@@ -2,10 +2,10 @@ from bs4 import BeautifulSoup
 
 
 # This file is the HTML template for our dashboard page
-TEMPLATE_FILEPATH = '../docs/index_template.html'
+TEMPLATE_FILEPATH = 'docs/index_template.html'
 
 # This file holds the current contents of our dashboard page
-DASHBOARD_FILEPATH = '../docs/index.html'
+DASHBOARD_FILEPATH = 'docs/index.html'
 
 # Which fields/columns we support to display in the dashboard table
 # Key is the name used internally, value is the display name on the dashboard
@@ -47,7 +47,7 @@ def add_to_dashboard(parsed_emails, append=False):
         for field in supported_fields:
             td = soup.new_tag('td')
             email_row.append(td)
-            content = parsed_email[field] if field in parsed_email else "N/A"
+            content = parsed_email[field] if field in parsed_email and parsed_email[field] is not None  else "N/A"
             td.append(content)
 
     with open(DASHBOARD_FILEPATH, 'w') as f:
