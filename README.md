@@ -12,7 +12,7 @@ Run your favorite version of the git clone command on this repo. I prefer:
 ### 2. Install Python
 This code was developed and run on Python `3.10`. Make sure you have an appropriate version installed locally.
 
-### 4. Install Requirements
+### 3. Install Requirements
 I recommend doing this in a fresh Python virtual environment. Cd into the repo and run:
 
 `pip3 install -r requirements.txt`
