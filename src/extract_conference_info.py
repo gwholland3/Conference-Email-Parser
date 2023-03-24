@@ -1,4 +1,6 @@
+import argparse
 import os
+import sys
 
 import nltk
 
@@ -9,15 +11,13 @@ from date_extractor import find_dates
 from dashboard import add_to_dashboard
 
 
-# Default value for where the emails to be parsed are located
+# Default value for emails_dir
 DEFAULT_EMAILS_DIR = 'data/conf_emails_numbered'
-# Maximum number of emails to parse from above location (set to `None` for no limit)
-limit = 10
 
 sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
 
-def main(emails_dir):
+def main(emails_dir, limit):
     """
     Main driver of the script, orchestrates the various phases of extracting
     info from the conference emails in the direcotry specified by `emails_dir`.
@@ -32,17 +32,16 @@ def main(emails_dir):
     email_summaries = []
     # Generate an information summary for each email
     for filename, processed_email in processed_emails:
-        print(filename)
         email_info = {'source_name': filename}
 
         sent_tokenized_content = [[s for s in sent_tokenizer.tokenize(par.strip())] for par in processed_email.body_text.split('\n')]
         word_tokenized_content = [nltk.word_tokenize(s) for p in sent_tokenized_content for s in p]
 
-        email_info['location'] = find_location(sent_tokenized_content)
+        email_info['location'] = None#find_location(sent_tokenized_content)
 
-        email_info['conf_name'] = find_conference(sent_tokenized_content)
+        email_info['conf_name'] = None#find_conference(sent_tokenized_content)
 
-        conf_dates = find_dates(word_tokenized_content)
+        conf_dates = {}#find_dates(word_tokenized_content)
         email_info.update(conf_dates)
 
         email_summaries.append(email_info)
@@ -61,6 +60,7 @@ def process_emails(email_filenames):
     processed_emails = []
     count = 0
     for email_filename in email_filenames:
+        print(email_filename)
         if limit and count >= limit:
             break
 
@@ -77,6 +77,23 @@ def process_emails(email_filenames):
     return processed_emails
 
 
+def get_args():
+    parser = argparse.ArgumentParser(description="Extract conference information from emails")
+    parser.add_argument('emails_dir', nargs='?', default=DEFAULT_EMAILS_DIR, help="directory containg the emails to be analyzed")
+    parser.add_argument('-l', '--limit', type=positive_int, help="maximum number of emails to analyze in the emails directory")
+    args = parser.parse_args()
+
+    return args.emails_dir, args.limit
+
+
+def positive_int(val):
+    int_val = int(val)
+    if int_val <= 0:
+        raise argparse.ArgumentTypeError(f"{value} is an invalid positive int value")
+    return int_val
+
+
 if __name__ == '__main__':
-    emails_dir = sys.args[1] if len(sys.args) > 1 else DEFAULT_EMAILS_DIR
-    main(emails_dir)
+    emails_dir, limit = get_args()
+
+    main(emails_dir, limit)
