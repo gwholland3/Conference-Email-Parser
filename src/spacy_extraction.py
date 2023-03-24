@@ -48,12 +48,12 @@ def merge_named_entities(doc):
 
 nlp.add_pipe('merge_named_entities')
 
-def find_date_descendant(token):
+def find_date_descendant(found_dates, token):
     result = []
     if token.text in found_dates:
         result.append(token.text)
     for child in token.children:
-        result += find_date_descendant(child)
+        result += find_date_descendant(found_dates, child)
     return result
 
 texts = [
@@ -63,32 +63,39 @@ texts = [
     '● Submission Deadline: February 05, 2020',
 ]
 
-for text in texts:
-    print(f'Processing {text}')
+def spacy_parse_email(text):
+    #print(f'Processing {text}')
     text_no_parens = re.sub("[\(\[].*?[\)\]]", "", text)
     doc = nlp(text_no_parens)
 
     found_dates = set([e.text for e in doc.ents if e.label_ == 'DATE'])
-    print(f'  Found dates: {found_dates}')
+    #print(f'  Found dates: {found_dates}')
 
     found_event_names = set([e.text for e in doc.ents if e.label_ == 'EVENT'])
-    print(f'  Found event names: {found_event_names}')
+    #print(f'  Found event names: {found_event_names}')
 
-    print('  All named entities:')
-    unused = [print(f'    {e.label_}: {repr(e)}') for e in doc.ents]
+    #print('  All named entities:')
+    #unused = [print(f'    {e.label_}: {repr(e)}') for e in doc.ents]
 
     deadlines = [t for t in doc if t.text.lower() == 'deadline']
+    submission_deadline = None
     for deadline in deadlines:
         deadline_dates = []
         for right in deadline.head.rights:
-            deadline_dates += find_date_descendant(right)
+            deadline_dates += find_date_descendant(found_dates, right)
 
         immediate_lefts = [t.text.lower() for t in deadline.lefts]
 
         if 'submission' in immediate_lefts:
+            submission_deadline = deadline_dates[0]
             print(f'  Submission date: {deadline_dates}')
 
-    print(f' All tokens: {[t for t in doc]}')
+    #print(f' All tokens: {[t for t in doc]}')
+
+    return {
+        'submission_deadline': submission_deadline,
+        'conf_name': list(found_event_names)[0] if len(found_event_names) > 0 else None
+    }
 
 #spacy.displacy.serve(doc, style="dep")
 

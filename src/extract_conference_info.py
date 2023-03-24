@@ -8,6 +8,7 @@ from email_processor import process_email
 from location_extractor import find_location
 from conference_extractor import find_conference
 from date_extractor import find_dates
+from spacy_extraction import spacy_parse_email
 from dashboard import add_to_dashboard
 
 
@@ -44,6 +45,9 @@ def main(emails_dir, limit):
         conf_dates = {}#find_dates(word_tokenized_content)
         email_info.update(conf_dates)
 
+        spacy_info = spacy_parse_email(processed_email.body_text)
+        email_info.update(spacy_info)
+
         email_summaries.append(email_info)
 
     # Insert our conference email summaries into our HTML dashboard
@@ -60,7 +64,6 @@ def process_emails(email_filenames):
     processed_emails = []
     count = 0
     for email_filename in email_filenames:
-        print(email_filename)
         if limit and count >= limit:
             break
 
