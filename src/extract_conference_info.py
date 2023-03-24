@@ -33,16 +33,17 @@ def main(emails_dir, limit):
     email_summaries = []
     # Generate an information summary for each email
     for filename, processed_email in processed_emails:
+        print(filename)
         email_info = {'source_name': filename}
 
         sent_tokenized_content = [[s for s in sent_tokenizer.tokenize(par.strip())] for par in processed_email.body_text.split('\n')]
         word_tokenized_content = [nltk.word_tokenize(s) for p in sent_tokenized_content for s in p]
 
-        email_info['location'] = None#find_location(sent_tokenized_content)
+        #email_info['location'] = find_location(sent_tokenized_content)
 
         email_info['conf_name'] = None#find_conference(sent_tokenized_content)
 
-        conf_dates = {}#find_dates(word_tokenized_content)
+        conf_dates = find_dates(word_tokenized_content)
         email_info.update(conf_dates)
 
         spacy_info = spacy_parse_email(processed_email.body_text)

@@ -12,7 +12,7 @@ def find_dates(parsed_file):
     :param This function takes as input a parsed eml file.
     :return: dict of values to dates
     '''
-    date_dict = {'conf_start_date': None, 'submission_deadline': [], 'notif_deadline': None}
+    date_dict = {'conf_dates': None, 'submission_deadline': [], 'notif_deadline': None}
     #for p in parsed_file:
     for s in parsed_file:
         for w in s:
@@ -30,10 +30,10 @@ def find_dates(parsed_file):
                 if is_conference_date(s,w):
                     #print(s)
                     current_sentence = ' '.join(filtered_strings)
-                    if date_dict['conf_start_date'] == None:
-                        date_dict['conf_start_date'] = current_sentence
-                    elif len(current_sentence) < len(date_dict['conf_start_date']):
-                        date_dict['conf_start_date'] = current_sentence
+                    if date_dict['conf_dates'] == None:
+                        date_dict['conf_dates'] = current_sentence
+                    elif len(current_sentence) < len(date_dict['conf_dates']):
+                        date_dict['conf_dates'] = current_sentence
                 if is_submission_date(s,w):
                     date_dict['submission_deadline'].append(standardized)
                 if is_notification_date(s,w):

@@ -13,7 +13,7 @@ country_pattern = re.compile(f'(?:.*)(?:\\s+|^)([A-Z][a-zA-Z]+),\\s*({any_countr
 # Do not ignore case here
 country_abbr_pattern = re.compile(f'(?:.*)(?:\\s+|^)([A-Z][a-zA-Z]+),\\s*({any_abbr_country})(?:.*)')
 
-city_state_pattern = re.compile(f'(\s*[A-Z][a-zA-Z]+)+,\s?([A-Z][a-z]+|[A-Z][A-Z]+)')
+city_state_pattern = re.compile(r'([A-Z][a-zA-Z]+\s+)+,\s?(?:[A-Z][a-z]+|[A-Z][A-Z]+)')
 
 
 #This mismatches dates (e.g. Friday, October) as well, may need to use with date_extractor to filter them out
