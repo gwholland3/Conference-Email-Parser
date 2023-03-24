@@ -41,6 +41,9 @@ The following is necessary for the Python library SpaCy to function:
 
 `python3 -m spacy download en_core_web_sm`
 
+The following is necessary to use the NLTK sentence tokenizer:
+
+`python3 nltk_download.py`
 
 ## Run the Program:
 
