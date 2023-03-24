@@ -133,3 +133,6 @@ dmypy.json
 
 # MacOS files
 *.DS_Store
+
+# Bash history from Docker
+.bash_history
