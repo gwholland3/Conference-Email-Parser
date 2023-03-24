@@ -19,6 +19,11 @@ I recommend doing this in a fresh Python virtual environment. Cd into the repo a
 
 `pip3 install -r requirements.txt`
 
+### 4. Download Required Data
+The following is necessary for the Python library SpaCy to function:
+
+`python3 -m spacy download en_core_web_sm`
+
 ## Run the Program:
 From the project root, run:
 

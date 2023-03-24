@@ -12,10 +12,8 @@ DASHBOARD_FILEPATH = 'docs/index.html'
 supported_fields = {
         'source_name': "Source Name",
         'conf_name': "Conference Name",
-        'description': "Description",
         'location': "Location",
-        'conf_start_date': "Start Date",
-        'conf_end_date': "End Date",
+        'conf_dates': "Dates",
         'submission_deadline': "Submission Deadline",
         'notif_deadline': "Notification Deadline"
 }

@@ -4,8 +4,14 @@ body {
 }
 
 #banner {
-   background-color: red;
+   background-color: darksalmon;
    display: flex;
    justify-content: center;
    align-items: center;
+}
+
+#content {
+   display: flex;
+   justify-content: center;
+   margin: 5% auto;
 }

@@ -12,7 +12,7 @@ def find_dates(parsed_file):
     :param This function takes as input a parsed eml file.
     :return: dict of values to dates
     '''
-    date_dict = {'conf_start_date': None, 'submission_deadline': [], 'notif_deadline': None}
+    date_dict = {'conf_dates': None, 'submission_deadline': [], 'notif_deadline': None}
     #for p in parsed_file:
     for s in parsed_file:
         for w in s:
@@ -21,21 +21,22 @@ def find_dates(parsed_file):
             if match:
                 #check to see what type of date it is
                 pattern = r"\d|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
-                filtered_strings = [i for i in s if re.search(pattern,i,flags=re.IGNORECASE)]
+                filtered_strings = [i for i in s if re.search(pattern,i,flags=re.IGNORECASE)][:3]
+                date_string = ' '.join(filtered_strings)
+                try:
+                    standardized = standardize_date(date_string)
+                except:
+                    continue
                 if is_conference_date(s,w):
                     #print(s)
                     current_sentence = ' '.join(filtered_strings)
-                    if date_dict['conf_start_date'] == None:
-                        date_dict['conf_start_date'] = current_sentence
-                    elif len(current_sentence) < len(date_dict['conf_start_date']):
-                        date_dict['conf_start_date'] = current_sentence
+                    if date_dict['conf_dates'] == None:
+                        date_dict['conf_dates'] = current_sentence
+                    elif len(current_sentence) < len(date_dict['conf_dates']):
+                        date_dict['conf_dates'] = current_sentence
                 if is_submission_date(s,w):
-                    date_string = ' '.join(filtered_strings)
-                    standardized = standardize_date(date_string)
                     date_dict['submission_deadline'].append(standardized)
                 if is_notification_date(s,w):
-                    date_string = ' '.join(filtered_strings)
-                    standardized = standardize_date(date_string)
                     date_dict['notif_deadline'] = standardized
 
     if len(date_dict['submission_deadline']) > 0:

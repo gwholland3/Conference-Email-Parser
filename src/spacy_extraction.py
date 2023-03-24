@@ -68,6 +68,8 @@ def spacy_parse_email(text):
     text_no_parens = re.sub("[\(\[].*?[\)\]]", "", text)
     doc = nlp(text_no_parens)
 
+    locs = [e.text for e in doc.ents if e.label_ == 'GPE' and ',' in e.text]
+
     found_dates = set([e.text for e in doc.ents if e.label_ == 'DATE'])
     #print(f'  Found dates: {found_dates}')
 
@@ -78,7 +80,6 @@ def spacy_parse_email(text):
     #unused = [print(f'    {e.label_}: {repr(e)}') for e in doc.ents]
 
     deadlines = [t for t in doc if t.text.lower() == 'deadline']
-    submission_deadline = None
     for deadline in deadlines:
         deadline_dates = []
         for right in deadline.head.rights:
@@ -87,14 +88,14 @@ def spacy_parse_email(text):
         immediate_lefts = [t.text.lower() for t in deadline.lefts]
 
         if 'submission' in immediate_lefts:
-            submission_deadline = deadline_dates[0]
-            print(f'  Submission date: {deadline_dates}')
+            pass
+            #print(f'  Submission date: {deadline_dates}')
 
     #print(f' All tokens: {[t for t in doc]}')
 
     return {
-        'submission_deadline': submission_deadline,
-        'conf_name': list(found_event_names)[0] if len(found_event_names) > 0 else None
+        'conf_name': list(found_event_names)[0] if len(found_event_names) > 0 else None,
+        'location': locs[0] if len(locs) > 0 else None
     }
 
 #spacy.displacy.serve(doc, style="dep")
