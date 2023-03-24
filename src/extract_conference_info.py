@@ -41,13 +41,16 @@ def main(emails_dir, limit):
 
         #email_info['location'] = find_location(sent_tokenized_content)
 
-        email_info['conf_name'] = None#find_conference(sent_tokenized_content)
+        email_info['conf_name'] = find_conference(sent_tokenized_content)
 
         conf_dates = find_dates(word_tokenized_content)
         email_info.update(conf_dates)
 
         spacy_info = spacy_parse_email(processed_email.body_text)
         email_info.update(spacy_info)
+
+        if email_info['conf_name'] == 'N/A':
+            email_info['conf_name'] = processed_email.subject
 
         email_summaries.append(email_info)
 

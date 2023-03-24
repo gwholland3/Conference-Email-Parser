@@ -93,10 +93,14 @@ def spacy_parse_email(text):
 
     #print(f' All tokens: {[t for t in doc]}')
 
-    return {
-        'conf_name': list(found_event_names)[0] if len(found_event_names) > 0 else None,
-        'location': locs[0] if len(locs) > 0 else None
-    }
+    values = {}
+
+    if len(found_event_names) > 0:
+        values['conf_name'] = list(found_event_names)[0]
+    if len(locs) > 0:
+        values['location'] = locs[0]
+
+    return values
 
 #spacy.displacy.serve(doc, style="dep")
 
