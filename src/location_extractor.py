@@ -3,7 +3,7 @@ import re
 
 # Country names list taken from:
 # https://gist.githubusercontent.com/kalinchernev/486393efcca01623b18d/raw/daa24c9fea66afb7d68f8d69f0c4b8eeb9406e83/countries
-with open('country_names.txt') as f:
+with open('data/country_names.txt') as f:
     country_names = [s.strip() for s in f.readlines()]
 country_abbrs = [''.join([c for c in s if c.isupper()]) for s in country_names if '&' not in s and ' ' in s]
 any_country = '|'.join(['(?:%s)' % re.escape(s) for s in country_names])

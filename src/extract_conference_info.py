@@ -9,15 +9,15 @@ from date_extractor import find_dates
 from dashboard import add_to_dashboard
 
 
-# Where the emails to be parsed are located
-emails_dir = 'data/conf_emails_numbered'
+# Default value for where the emails to be parsed are located
+DEFAULT_EMAILS_DIR = 'data/conf_emails_numbered'
 # Maximum number of emails to parse from above location (set to `None` for no limit)
-limit = 100
+limit = 10
 
 sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
 
-def main():
+def main(emails_dir):
     """
     Main driver of the script, orchestrates the various phases of extracting
     info from the conference emails in the direcotry specified by `emails_dir`.
@@ -32,6 +32,7 @@ def main():
     email_summaries = []
     # Generate an information summary for each email
     for filename, processed_email in processed_emails:
+        print(filename)
         email_info = {'source_name': filename}
 
         sent_tokenized_content = [[s for s in sent_tokenizer.tokenize(par.strip())] for par in processed_email.body_text.split('\n')]
@@ -77,4 +78,5 @@ def process_emails(email_filenames):
 
 
 if __name__ == '__main__':
-    main()
+    emails_dir = sys.args[1] if len(sys.args) > 1 else DEFAULT_EMAILS_DIR
+    main(emails_dir)
