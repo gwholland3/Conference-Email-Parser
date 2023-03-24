@@ -33,7 +33,12 @@ def main(emails_dir, limit):
     email_summaries = []
     # Generate an information summary for each email
     for filename, processed_email in processed_emails:
-        print(filename)
+        if 'onference' not in processed_email.body_text:
+            print(f"{filename} not a conference email")
+            continue
+
+        print(f"Analyzing {filename}")
+
         email_info = {'source_name': filename}
 
         sent_tokenized_content = [[s for s in sent_tokenizer.tokenize(par.strip())] for par in processed_email.body_text.split('\n')]
