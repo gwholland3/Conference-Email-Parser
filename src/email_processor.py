@@ -27,11 +27,11 @@ def process_email(email_filename):
     """
 
     try:
-        with open(email_filename) as f:
+        with open(email_filename, encoding="ISO-8859-1") as f:
             msg = email.message_from_file(f, policy=email.policy.default)
     except:
         # One of the email files generates a UnicodeDecodeError when message_from_file() is called
-        print("Error processing email file")
+        print(f"Error processing email file {email_filename}")
         return None
 
     subject = get_header_field(msg, 'Subject')
