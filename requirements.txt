@@ -1,4 +1,5 @@
 beautifulsoup4
+html2text
 nltk
 python-dateutil
 spacy
