@@ -30,7 +30,6 @@ def process_email(email_filename):
         with open(email_filename, encoding="ISO-8859-1") as f:
             msg = email.message_from_file(f, policy=email.policy.default)
     except:
-        # One of the email files generates a UnicodeDecodeError when message_from_file() is called
         print(f"Error processing email file {email_filename}")
         return None
 

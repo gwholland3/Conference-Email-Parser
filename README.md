@@ -27,6 +27,8 @@ The following is necessary for the Python library SpaCy to function:
 ## Run the Program:
 From the project root, run:
 
-```
-python3 src/extract_conference_info.py
-```
+`python3 src/extract_conference_info.py`
+
+Run the following to see all options:
+
+`python3 src/extract_conference_info.py -h`
